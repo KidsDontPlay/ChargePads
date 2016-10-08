@@ -1,6 +1,7 @@
 package mrriegel.chargepads;
 
 import mrriegel.limelib.helper.IProxy;
+import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
