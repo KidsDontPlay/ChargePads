@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -47,8 +48,13 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 	}
 
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		return super.getActualState(state, worldIn, pos).withProperty(CHARGE, (((TilePad) worldIn.getTileEntity(pos)).isActive()));
+	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+		TileEntity te = world.getTileEntity(pos);
+		boolean charge = false;
+		if (te instanceof TilePad) {
+			charge = ((TilePad) te).isActive();
+		}
+		return state.withProperty(CHARGE, charge);
 	}
 
 	@Override
@@ -61,7 +67,7 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 		return new BlockStateContainer(this, new IProperty[] { FACING, CHARGE });
 	}
 
-	protected final int getTier() {
+	public final int getTier() {
 		return Integer.valueOf(getRegistryName().toString().substring(getRegistryName().toString().length() - 1));
 	}
 

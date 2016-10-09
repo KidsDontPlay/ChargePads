@@ -2,7 +2,6 @@ package mrriegel.chargepads;
 
 import java.io.File;
 
-import mrriegel.chargepads.tile.TilePad.Pad;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
 
@@ -16,13 +15,12 @@ public class ConfigHandler {
 		config = new Configuration(file);
 		config.load();
 
-		RF = config.getBoolean("rf", Pad.ENERGY.name(), true, "Enable RF.");
-		TESLA = config.getBoolean("tesla", Pad.ENERGY.name(), Loader.isModLoaded("tesla"), "Enable Tesla.");
-		FE = config.getBoolean("fe", Pad.ENERGY.name(), true, "Enable Forge Energy.");
+		RF = config.getBoolean("rf", "Energy", true, "Enable RF.");
+		TESLA = config.getBoolean("tesla", "Energy", Loader.isModLoaded("tesla"), "Enable Tesla.") && Loader.isModLoaded("tesla");
+		FE = config.getBoolean("fe", "Energy", true, "Enable Forge Energy.");
 
 		if (config.hasChanged()) {
 			config.save();
 		}
 	}
-
 }

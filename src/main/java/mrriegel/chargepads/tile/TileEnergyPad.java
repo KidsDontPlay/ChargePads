@@ -15,21 +15,15 @@ import cofh.api.energy.IEnergyContainerItem;
 
 public class TileEnergyPad extends TilePad {
 
-	public TileEnergyPad(int tier) {
-		super(tier);
-	}
-
+	//	@Override
 	@Override
-	public Pad getPad() {
-		return Pad.ENERGY;
-	}
-
-	@Override
-	protected void chargeEntities() {
+	protected boolean chargeEntities() {
 		boolean charged = false;
 		for (Entity e : getEntities()) {
-			if (charged || !e.isEntityAlive() || energy.getEnergyStored() == 0)
+			if (charged || energy.getEnergyStored() == 0)
 				break;
+			if (!e.isEntityAlive())
+				continue;
 			if (chargeProvider(e)) {
 				charged = true;
 			} else if (e instanceof EntityItem) {
@@ -47,31 +41,55 @@ public class TileEnergyPad extends TilePad {
 				}
 			}
 		}
+		return charged;
 	}
 
 	private boolean chargeProvider(ICapabilityProvider provider) {
 		if (ConfigHandler.RF && provider instanceof ItemStack && ((ItemStack) provider).getItem() instanceof IEnergyContainerItem) {
-			int receive = ((IEnergyContainerItem) ((ItemStack) provider).getItem()).receiveEnergy((ItemStack) provider, Math.min(this.energy.getEnergyStored(), (int) Math.pow(8, getTier()) * 5), false);
+			int receive = ((IEnergyContainerItem) ((ItemStack) provider).getItem()).receiveEnergy((ItemStack) provider, chargeAmount(), false);
 			if (receive > 0) {
 				this.energy.extractEnergy(receive, false);
 				return true;
 			}
 		} else if (ConfigHandler.FE && provider.hasCapability(CapabilityEnergy.ENERGY, null)) {
 			IEnergyStorage storage = provider.getCapability(CapabilityEnergy.ENERGY, null);
-			int receive = storage.receiveEnergy(Math.min(this.energy.getEnergyStored(), (int) Math.pow(8, getTier()) * 5), false);
+			int receive = storage.receiveEnergy(chargeAmount(), false);
 			if (receive > 0) {
 				this.energy.extractEnergy(receive, false);
 				return true;
 			}
 		} else if (ConfigHandler.TESLA && provider.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, null)) {
 			ITeslaConsumer consumer = provider.getCapability(TeslaCapabilities.CAPABILITY_CONSUMER, null);
-			long receive = consumer.givePower(Math.min(this.energy.getEnergyStored(), (int) Math.pow(8, getTier()) * 5), false);
+			long receive = consumer.givePower(chargeAmount(), false);
 			if (receive > 0) {
 				this.energy.extractEnergy((int) receive, false);
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private int chargeAmount() {
+		//		return 10000;
+		return Math.min(this.energy.getEnergyStored(), (int) Math.pow(8, getTier()) * 5);
+	}
+
+	public static class T1 extends TileEnergyPad {
+		public T1() {
+			energy = getBaseEnergy(1);
+		}
+	}
+
+	public static class T2 extends TileEnergyPad {
+		public T2() {
+			energy = getBaseEnergy(2);
+		}
+	}
+
+	public static class T3 extends TileEnergyPad {
+		public T3() {
+			energy = getBaseEnergy(3);
+		}
 	}
 
 }

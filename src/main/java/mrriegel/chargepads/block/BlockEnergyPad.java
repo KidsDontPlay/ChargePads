@@ -13,12 +13,24 @@ public class BlockEnergyPad extends BlockPad<TileEnergyPad> {
 
 	@Override
 	public TileEntity createTileEntity(World world, IBlockState state) {
-		return new TileEnergyPad(getTier());
+		if (getTier() == 1)
+			return new TileEnergyPad.T1();
+		else if (getTier() == 2)
+			return new TileEnergyPad.T2();
+		else if (getTier() == 3)
+			return new TileEnergyPad.T3();
+		return null;
 	}
 
 	@Override
 	protected Class<? extends TileEnergyPad> getTile() {
-		return TileEnergyPad.class;
+		if (getTier() == 1)
+			return TileEnergyPad.T1.class;
+		else if (getTier() == 2)
+			return TileEnergyPad.T2.class;
+		else if (getTier() == 3)
+			return TileEnergyPad.T3.class;
+		return null;
 	}
 
 }

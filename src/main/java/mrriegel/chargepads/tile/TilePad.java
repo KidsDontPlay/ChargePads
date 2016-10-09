@@ -2,10 +2,9 @@ package mrriegel.chargepads.tile;
 
 import java.util.List;
 
-import com.google.common.collect.Iterables;
-
 import mrriegel.chargepads.ConfigHandler;
 import mrriegel.chargepads.EnergyStorageExt;
+import mrriegel.chargepads.block.BlockPad;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTile;
@@ -27,19 +26,7 @@ import cofh.api.energy.IEnergyReceiver;
 
 public abstract class TilePad extends CommonTile implements ITickable, IDataKeeper, IEnergyReceiver {
 
-	public enum Pad {
-		ENERGY, HEALTH;
-	}
-
-	protected int tier;
-
-	public TilePad(int tier) {
-		this.tier = tier;
-//		System.out.println("zip: inval: "+isInvalid());
-		energy = new EnergyStorageExt((int) Math.pow(8, tier) * 5000, (int) Math.pow(8, tier) * 1000);
-	}
-
-	protected final EnergyStorageExt energy;
+	protected EnergyStorageExt energy;
 	protected boolean active = false;
 
 	public EnumFacing getFacing() {
@@ -55,12 +42,18 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 	}
 
 	public int getTier() {
-		return tier;
+		try {
+			return ((BlockPad) worldObj.getBlockState(pos).getBlock()).getTier();
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 
-	public abstract Pad getPad();
+	public EnergyStorageExt getBaseEnergy(int tier) {
+		return new EnergyStorageExt((int) Math.pow(8, tier) * 5000, (int) Math.pow(8, tier) * 1000);
+	}
 
-	protected abstract void chargeEntities();
+	protected abstract boolean chargeEntities();
 
 	private List<Entity> entityList;
 
@@ -73,33 +66,35 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 
 	@Override
 	public void update() {
-		if(!worldObj.isRemote&&worldObj.getTotalWorldTime()%30==0)
-			System.out.println("tick");
-		chargeEntities();
+		//		if (!worldObj.isRemote && worldObj.getTotalWorldTime() % 30 == 0)
+		//			System.out.println("tick");
+
+		if (!worldObj.isBlockPowered(pos))
+			active = chargeEntities();
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		energy.setEnergyStored(NBTHelper.getInt(compound, "energy"));
-		active = compound.getBoolean("active");
+		active = compound.getBoolean("ACTIVE");
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTHelper.setInt(compound, "energy", energy.getEnergyStored());
-		compound.setBoolean("active", active);
+		compound.setBoolean("ACTIVE", active);
 		return super.writeToNBT(compound);
 	}
 
 	@Override
 	public void writeToStack(ItemStack stack) {
-		NBTStackHelper.setInt(stack, "energy", energy.getEnergyStored());
+		NBTStackHelper.setInt(stack, "energY", energy.getEnergyStored());
 	}
 
 	@Override
 	public void readFromStack(ItemStack stack) {
-		energy.setEnergyStored(NBTStackHelper.getInt(stack, "energy"));
+		energy.setEnergyStored(NBTStackHelper.getInt(stack, "energY"));
 	}
 
 	@Override
