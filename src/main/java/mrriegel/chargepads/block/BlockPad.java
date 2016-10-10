@@ -1,9 +1,16 @@
 package mrriegel.chargepads.block;
 
-import static net.minecraft.block.BlockDispenser.FACING;
+import static net.minecraft.block.BlockDirectional.FACING;
+
+import java.util.List;
+import java.util.Random;
+
 import mrriegel.chargepads.proxy.ClientProxy;
 import mrriegel.chargepads.tile.TilePad;
 import mrriegel.limelib.block.CommonBlockContainer;
+import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.helper.ParticleHelper;
+import mrriegel.limelib.particle.CommonParticle;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -11,6 +18,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -18,6 +26,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -55,6 +64,29 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 			charge = ((TilePad) te).isActive();
 		}
 		return state.withProperty(CHARGE, charge);
+	}
+
+	@Override
+	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+		super.randomDisplayTick(stateIn, worldIn, pos, rand);
+		if (stateIn.getValue(CHARGE)) {
+			for (int i = 0; i < 4; i++) {
+				Vec3d o = new Vec3d(pos.getX() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1), pos.getY() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1), pos.getZ() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1));
+				BlockPos nei = pos.offset(stateIn.getValue(FACING));
+				Vec3d v = new Vec3d(nei.getX() - pos.getX(), nei.getY() - pos.getY(), nei.getZ() - pos.getZ());
+				v = v.scale(.03);
+				ParticleHelper.renderParticle(new CommonParticle(o.xCoord, o.yCoord, o.zCoord, v.xCoord, v.yCoord, v.zCoord).setNoClip(true).setColor(0xff0000, 0).setScale(.5f).setMaxAge2(40).setFlouncing(0.005));
+			}
+		}
+	}
+
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+		super.addInformation(stack, playerIn, tooltip, advanced);
+		int energy = NBTStackHelper.getInt(stack, "energY");
+		String text = energy + " RF";
+		if (NBTStackHelper.getBoolean(stack, "idatakeeper"))
+			tooltip.add(text);
 	}
 
 	@Override

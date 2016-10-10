@@ -45,11 +45,9 @@ public class ChargePads {
 	@SubscribeEvent
 	public void jump(LivingJumpEvent event) {
 		if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntityLiving().worldObj.isRemote) {
-			System.out.println("TEs:");
+//			System.out.println("TEs:");
 			for (TileEntity t : event.getEntityLiving().worldObj.tickableTileEntities) {
-				System.out.println("   " + t.toString());
-				event.getEntityLiving().worldObj.notifyBlockOfStateChange(t.getPos(), t.getBlockType());
-				//				event.getEntityLiving().worldObj.markBlockRangeForRenderUpdate(t.getPos(), t.getPos());
+//				System.out.println("   " + t.toString());
 			}
 			//			System.out.println(event.getEntityLiving().worldObj.getTileEntity(new BlockPos(event.getEntityLiving()).down()));
 		}

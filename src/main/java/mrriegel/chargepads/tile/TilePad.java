@@ -7,6 +7,8 @@ import mrriegel.chargepads.EnergyStorageExt;
 import mrriegel.chargepads.block.BlockPad;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.helper.ParticleHelper;
+import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
 import net.darkhax.tesla.api.ITeslaConsumer;
@@ -19,6 +21,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
@@ -27,7 +31,7 @@ import cofh.api.energy.IEnergyReceiver;
 public abstract class TilePad extends CommonTile implements ITickable, IDataKeeper, IEnergyReceiver {
 
 	protected EnergyStorageExt energy;
-	protected boolean active = false;
+	protected boolean active = false, markedForSync = false;
 
 	public EnumFacing getFacing() {
 		return worldObj.getBlockState(pos).getValue(BlockDispenser.FACING);
@@ -37,15 +41,15 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 		return active;
 	}
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+	//	public void setActive(boolean active) {
+	//		this.active = active;
+	//	}
 
 	public int getTier() {
 		try {
 			return ((BlockPad) worldObj.getBlockState(pos).getBlock()).getTier();
 		} catch (Exception e) {
-			return 0;
+			return 1;
 		}
 	}
 
@@ -68,9 +72,24 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 	public void update() {
 		//		if (!worldObj.isRemote && worldObj.getTotalWorldTime() % 30 == 0)
 		//			System.out.println("tick");
-
-		if (!worldObj.isBlockPowered(pos))
+		if (onClient())
+			return;
+		boolean before = active;
+		if (!worldObj.isBlockPowered(pos)) {
 			active = chargeEntities();
+			if (active) {
+				markDirty();
+				markedForSync = true;
+			}
+		} else
+			active = false;
+		if (markedForSync && worldObj.getTotalWorldTime() % 5 == 0) {
+			markedForSync = false;
+			sync();
+		}
+		if (active != before) {
+			worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockPad.CHARGE, active), 2);
+		}
 	}
 
 	@Override
@@ -113,6 +132,7 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 
 	@Override
 	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
+		markedForSync = true;
 		return energy.receiveEnergy(maxReceive, simulate);
 	}
 

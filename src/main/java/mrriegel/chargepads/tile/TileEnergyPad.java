@@ -15,7 +15,6 @@ import cofh.api.energy.IEnergyContainerItem;
 
 public class TileEnergyPad extends TilePad {
 
-	//	@Override
 	@Override
 	protected boolean chargeEntities() {
 		boolean charged = false;
@@ -36,8 +35,11 @@ public class TileEnergyPad extends TilePad {
 			} else if (e instanceof EntityPlayer) {
 				PlayerInvWrapper inv = new PlayerInvWrapper(((EntityPlayer) e).inventory);
 				for (int i = 0; i < inv.getSlots(); i++) {
-					if (inv.getStackInSlot(i) != null && (charged = chargeProvider(inv.getStackInSlot(i))))
+					if (inv.getStackInSlot(i) != null && (charged = chargeProvider(inv.getStackInSlot(i)))) {
+						//						if (worldObj.rand.nextBoolean()&&false)
+						//							((EntityPlayer) e).openContainer.detectAndSendChanges();
 						break;
+					}
 				}
 			}
 		}
@@ -70,7 +72,6 @@ public class TileEnergyPad extends TilePad {
 	}
 
 	private int chargeAmount() {
-		//		return 10000;
 		return Math.min(this.energy.getEnergyStored(), (int) Math.pow(8, getTier()) * 5);
 	}
 

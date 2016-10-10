@@ -1,6 +1,7 @@
 package mrriegel.chargepads.proxy;
 
 import mrriegel.chargepads.ChargePads;
+import mrriegel.chargepads.ConfigHandler;
 import mrriegel.chargepads.init.ModBlocks;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.util.Utils;
@@ -39,7 +40,7 @@ public class ClientProxy extends CommonProxy {
 	public void overLay(Post event) {
 		Minecraft mc = Minecraft.getMinecraft();
 		TileEntity tile = mc.theWorld.getTileEntity(mc.objectMouseOver.getBlockPos());
-		if (GuiScreen.isShiftKeyDown() && event.getType() == ElementType.TEXT && tile != null && (tile instanceof IEnergyHandler || tile.hasCapability(CapabilityEnergy.ENERGY, null) || (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)))) {
+		if (ConfigHandler.showEnergy && GuiScreen.isShiftKeyDown() && event.getType() == ElementType.TEXT && tile != null && (tile instanceof IEnergyHandler || tile.hasCapability(CapabilityEnergy.ENERGY, null) || (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)))) {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
 			int energy = 0, max = 0;
 			if (tile instanceof IEnergyHandler) {
@@ -58,7 +59,7 @@ public class ClientProxy extends CommonProxy {
 			}
 			ScaledResolution sr = event.getResolution();
 			int diff = 15, lenght = 80;
-			String text = energy + " / " + Utils.formatNumber(max) + " RF";
+			String text = energy + "/" + max + " RF";
 			mc.fontRendererObj.drawString(text, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(text)) / 2, (sr.getScaledHeight() - diff - mc.fontRendererObj.FONT_HEIGHT) / 2, 0xffff00, true);
 			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() - -(diff + 5) - 8) / 2, lenght, (float) energy / (float) max);
 		}
