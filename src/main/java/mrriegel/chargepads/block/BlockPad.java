@@ -5,12 +5,11 @@ import static net.minecraft.block.BlockDirectional.FACING;
 import java.util.List;
 import java.util.Random;
 
-import mrriegel.chargepads.proxy.ClientProxy;
+import mrriegel.chargepads.ChargePads;
+import mrriegel.chargepads.proxy.CommonProxy;
 import mrriegel.chargepads.tile.TilePad;
 import mrriegel.limelib.block.CommonBlockContainer;
 import mrriegel.limelib.helper.NBTStackHelper;
-import mrriegel.limelib.helper.ParticleHelper;
-import mrriegel.limelib.particle.CommonParticle;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -38,7 +37,7 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 		this.setHardness(4F);
 		this.setResistance(30F);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(CHARGE, false));
-		this.setCreativeTab(ClientProxy.tab);
+		this.setCreativeTab(CommonProxy.tab);
 	}
 
 	@Override
@@ -70,12 +69,12 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
 		super.randomDisplayTick(stateIn, worldIn, pos, rand);
 		if (stateIn.getValue(CHARGE)) {
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 5; i++) {
 				Vec3d o = new Vec3d(pos.getX() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1), pos.getY() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1), pos.getZ() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1));
 				BlockPos nei = pos.offset(stateIn.getValue(FACING));
 				Vec3d v = new Vec3d(nei.getX() - pos.getX(), nei.getY() - pos.getY(), nei.getZ() - pos.getZ());
-				v = v.scale(.03);
-				ParticleHelper.renderParticle(new CommonParticle(o.xCoord, o.yCoord, o.zCoord, v.xCoord, v.yCoord, v.zCoord).setNoClip(true).setColor(0xff0000, 0).setScale(.5f).setMaxAge2(40).setFlouncing(0.005));
+				v = v.scale(.07);
+				ChargePads.proxy.spawnParticle(o.xCoord, o.yCoord, o.zCoord, v.xCoord, v.yCoord, v.zCoord, getRegistryName().toString());
 			}
 		}
 	}

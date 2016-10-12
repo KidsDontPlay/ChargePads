@@ -1,16 +1,14 @@
 package mrriegel.chargepads.proxy;
 
-import mrriegel.chargepads.ChargePads;
 import mrriegel.chargepads.ConfigHandler;
 import mrriegel.chargepads.init.ModBlocks;
 import mrriegel.limelib.gui.GuiDrawer;
-import mrriegel.limelib.util.Utils;
+import mrriegel.limelib.helper.ParticleHelper;
+import mrriegel.limelib.particle.CommonParticle;
 import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
@@ -39,6 +37,8 @@ public class ClientProxy extends CommonProxy {
 	@SubscribeEvent
 	public void overLay(Post event) {
 		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.objectMouseOver.getBlockPos() == null)
+			return;
 		TileEntity tile = mc.theWorld.getTileEntity(mc.objectMouseOver.getBlockPos());
 		if (ConfigHandler.showEnergy && GuiScreen.isShiftKeyDown() && event.getType() == ElementType.TEXT && tile != null && (tile instanceof IEnergyHandler || tile.hasCapability(CapabilityEnergy.ENERGY, null) || (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)))) {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
@@ -58,24 +58,16 @@ public class ClientProxy extends CommonProxy {
 				max = (int) tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getCapacity() % Integer.MAX_VALUE;
 			}
 			ScaledResolution sr = event.getResolution();
-			int diff = 15, lenght = 80;
 			String text = energy + "/" + max + " RF";
+			int diff = 15, lenght = 80/*mc.fontRendererObj.getStringWidth(text)*/;
 			mc.fontRendererObj.drawString(text, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(text)) / 2, (sr.getScaledHeight() - diff - mc.fontRendererObj.FONT_HEIGHT) / 2, 0xffff00, true);
 			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() - -(diff + 5) - 8) / 2, lenght, (float) energy / (float) max);
 		}
 	}
 
-	public static final CreativeTabs tab = new CreativeTabs(ChargePads.MODID) {
-
-		@Override
-		public Item getTabIconItem() {
-			return Item.getItemFromBlock(ModBlocks.ENERGYPAD1);
-		}
-
-		@Override
-		public String getTranslatedTabLabel() {
-			return ChargePads.MODNAME;
-		}
-	};
+	@Override
+	public void spawnParticle(double x, double y, double z, double dx, double dy, double dz, String name) {
+		ParticleHelper.renderParticle(new CommonParticle(x, y, z, dx, dy, dz).setNoClip(true).setColor(name.contains("energy") ? 0xff0000 : 0x8a2be2, 0).setScale(.5f).setMaxAge2(20).setFlouncing(0.005));
+	}
 
 }

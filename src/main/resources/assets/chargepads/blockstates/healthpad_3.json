@@ -2,9 +2,9 @@
     "forge_marker" : 1, 
     "defaults" : {
         "textures" : {
-            "up" : "chargepads:blocks/energypad_2_off", 
-            "down" : "chargepads:blocks/pad_2_down", 
-            "side" : "chargepads:blocks/pad_2_side"
+            "up" : "chargepads:blocks/healthpad_3_off", 
+            "down" : "chargepads:blocks/pad_3_down", 
+            "side" : "chargepads:blocks/pad_3_side"
         },
         "model" : "chargepads:topdown"
     }, 
@@ -40,7 +40,7 @@
         "charge" : {
             "true" : {
                 "textures" : {
-                    "up" : "chargepads:blocks/energypad_2_on"
+                    "up" : "chargepads:blocks/healthpad_3_on"
                 }
             }, 
             "false" : {

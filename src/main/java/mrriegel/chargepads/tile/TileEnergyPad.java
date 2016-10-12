@@ -18,7 +18,7 @@ public class TileEnergyPad extends TilePad {
 	@Override
 	protected boolean chargeEntities() {
 		boolean charged = false;
-		for (Entity e : getEntities()) {
+		for (Entity e : getEntities(false)) {
 			if (charged || energy.getEnergyStored() == 0)
 				break;
 			if (!e.isEntityAlive())

@@ -1,3 +1,6 @@
-tooltip.portals.color=Change color of frame and portal
-tooltip.portals.direction=Change face direction after teleport,
-tooltip.portals.particle=enable particles and change color of them
+tile.chargepads:energypad_1.name=Energy Pad I
+tile.chargepads:energypad_2.name=Energy Pad II
+tile.chargepads:energypad_3.name=Energy Pad III
+tile.chargepads:healthpad_1.name=Health Pad I
+tile.chargepads:healthpad_2.name=Health Pad II
+tile.chargepads:healthpad_3.name=Health Pad III

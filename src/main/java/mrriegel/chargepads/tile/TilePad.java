@@ -3,14 +3,12 @@ package mrriegel.chargepads.tile;
 import java.util.List;
 
 import mrriegel.chargepads.ConfigHandler;
-import mrriegel.chargepads.EnergyStorageExt;
 import mrriegel.chargepads.block.BlockPad;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
-import mrriegel.limelib.helper.ParticleHelper;
-import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
+import mrriegel.limelib.util.EnergyStorageExt;
 import net.darkhax.tesla.api.ITeslaConsumer;
 import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.BlockDispenser;
@@ -21,8 +19,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
@@ -47,7 +43,7 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 
 	public int getTier() {
 		try {
-			return ((BlockPad) worldObj.getBlockState(pos).getBlock()).getTier();
+			return ((BlockPad<?>) worldObj.getBlockState(pos).getBlock()).getTier();
 		} catch (Exception e) {
 			return 1;
 		}
@@ -61,8 +57,8 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 
 	private List<Entity> entityList;
 
-	public List<Entity> getEntities() {
-		if (entityList == null || worldObj.getTotalWorldTime() % 10 == 0)
+	public List<Entity> getEntities(boolean force) {
+		if (entityList == null || worldObj.getTotalWorldTime() % 10 == 0 || force)
 			return entityList = worldObj.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.offset(getFacing())).expand(getFacing().getAxis() == Axis.X ? 1 : 0, getFacing().getAxis() == Axis.Y ? 1 : 0, getFacing().getAxis() == Axis.Z ? 1 : 0));
 		else
 			return entityList;
@@ -70,8 +66,6 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 
 	@Override
 	public void update() {
-		//		if (!worldObj.isRemote && worldObj.getTotalWorldTime() % 30 == 0)
-		//			System.out.println("tick");
 		if (onClient())
 			return;
 		boolean before = active;
