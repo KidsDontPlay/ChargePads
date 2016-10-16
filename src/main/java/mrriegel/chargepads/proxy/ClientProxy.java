@@ -37,10 +37,10 @@ public class ClientProxy extends CommonProxy {
 	@SubscribeEvent
 	public void overLay(Post event) {
 		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.objectMouseOver.getBlockPos() == null)
+		if (mc.objectMouseOver.getBlockPos() == null || mc.theWorld.getTileEntity(mc.objectMouseOver.getBlockPos()) == null)
 			return;
 		TileEntity tile = mc.theWorld.getTileEntity(mc.objectMouseOver.getBlockPos());
-		if (ConfigHandler.showEnergy && GuiScreen.isShiftKeyDown() && event.getType() == ElementType.TEXT && tile != null && (tile instanceof IEnergyHandler || tile.hasCapability(CapabilityEnergy.ENERGY, null) || (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)))) {
+		if (ConfigHandler.showEnergy && GuiScreen.isShiftKeyDown() && event.getType() == ElementType.TEXT && (tile instanceof IEnergyHandler || tile.hasCapability(CapabilityEnergy.ENERGY, null) || (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)))) {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
 			int energy = 0, max = 0;
 			if (tile instanceof IEnergyHandler) {
@@ -59,15 +59,25 @@ public class ClientProxy extends CommonProxy {
 			}
 			ScaledResolution sr = event.getResolution();
 			String text = energy + "/" + max + " RF";
-			int diff = 15, lenght = 80/*mc.fontRendererObj.getStringWidth(text)*/;
-			mc.fontRendererObj.drawString(text, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(text)) / 2, (sr.getScaledHeight() - diff - mc.fontRendererObj.FONT_HEIGHT) / 2, 0xffff00, true);
-			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() - -(diff + 5) - 8) / 2, lenght, (float) energy / (float) max);
+			int lenght = 80/*mc.fontRendererObj.getStringWidth(text)*/;
+			mc.fontRendererObj.drawString(text, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRendererObj.FONT_HEIGHT) / 2, 0xffff00, true);
+			boolean before = mc.fontRendererObj.getUnicodeFlag();
+			mc.fontRendererObj.setUnicodeFlag(true);
+			String config = "Can be disabled in Charge Pads config.";
+			mc.fontRendererObj.drawString(config, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(config)) / 2, (sr.getScaledHeight() + 40 - mc.fontRendererObj.FONT_HEIGHT) / 2, 0x40ffff00, true);
+			mc.fontRendererObj.setUnicodeFlag(before);
+			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() + 20 - 8) / 2, lenght, (float) energy / (float) max);
 		}
 	}
 
 	@Override
 	public void spawnParticle(double x, double y, double z, double dx, double dy, double dz, String name) {
-		ParticleHelper.renderParticle(new CommonParticle(x, y, z, dx, dy, dz).setNoClip(true).setColor(name.contains("energy") ? 0xff0000 : 0x8a2be2, 0).setScale(.5f).setMaxAge2(20).setFlouncing(0.005));
+		int color = 0;
+		if (name.contains("energy"))
+			color = 0xff0000;
+		else if (name.contains("health"))
+			color = 0x8a2be2;
+		ParticleHelper.renderParticle(new CommonParticle(x, y, z, dx, dy, dz).setNoClip(true).setColor(color, 0).setScale(.5f).setMaxAge2(20).setFlouncing(0.009));
 	}
 
 }

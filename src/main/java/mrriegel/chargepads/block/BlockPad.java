@@ -34,7 +34,7 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 
 	public BlockPad(String name) {
 		super(Material.IRON, name);
-		this.setHardness(4F);
+		this.setHardness(3F);
 		this.setResistance(30F);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(CHARGE, false));
 		this.setCreativeTab(CommonProxy.tab);
@@ -69,7 +69,7 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
 		super.randomDisplayTick(stateIn, worldIn, pos, rand);
 		if (stateIn.getValue(CHARGE)) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < getTier() * 3; i++) {
 				Vec3d o = new Vec3d(pos.getX() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1), pos.getY() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1), pos.getZ() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1));
 				BlockPos nei = pos.offset(stateIn.getValue(FACING));
 				Vec3d v = new Vec3d(nei.getX() - pos.getX(), nei.getY() - pos.getY(), nei.getZ() - pos.getZ());
@@ -82,10 +82,11 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
 		super.addInformation(stack, playerIn, tooltip, advanced);
-		int energy = NBTStackHelper.getInt(stack, "energY");
-		String text = energy + " RF";
-		if (NBTStackHelper.getBoolean(stack, "idatakeeper"))
+		if (NBTStackHelper.getBoolean(stack, "idatakeeper")) {
+			int energy = NBTStackHelper.getInt(stack, "energY");
+			String text = energy + " RF";
 			tooltip.add(text);
+		}
 	}
 
 	@Override

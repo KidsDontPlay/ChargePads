@@ -37,10 +37,6 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 		return active;
 	}
 
-	//	public void setActive(boolean active) {
-	//		this.active = active;
-	//	}
-
 	public int getTier() {
 		try {
 			return ((BlockPad<?>) worldObj.getBlockState(pos).getBlock()).getTier();
@@ -72,7 +68,6 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 		if (!worldObj.isBlockPowered(pos)) {
 			active = chargeEntities();
 			if (active) {
-				markDirty();
 				markedForSync = true;
 			}
 		} else

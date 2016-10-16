@@ -27,6 +27,9 @@ public class ModBlocks {
 		HEALTHPAD2.registerBlock();
 		HEALTHPAD3.registerBlock();
 
+	}
+
+	public static void initRecipes() {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ENERGYPAD1), "isi", "qMq", 'i', "ingotIron", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', Blocks.REDSTONE_BLOCK));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ENERGYPAD2), "isi", "qMq", 'i', "ingotGold", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', ENERGYPAD1));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ENERGYPAD3), "isi", "qMq", 'i', "gemDiamond", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', ENERGYPAD2));
@@ -35,6 +38,10 @@ public class ModBlocks {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(HEALTHPAD1), "isi", "qMq", 'i', "ingotIron", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', potion));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(HEALTHPAD2), "isi", "qMq", 'i', "ingotGold", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', HEALTHPAD1));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(HEALTHPAD3), "isi", "qMq", 'i', "gemDiamond", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', HEALTHPAD2));
+
+		//		GameRegistry.addShapelessRecipe(new ItemStack(ENERGYPAD1), ENERGYPAD1);
+		//		GameRegistry.addShapelessRecipe(new ItemStack(ENERGYPAD2), ENERGYPAD2);
+		//		GameRegistry.addShapelessRecipe(new ItemStack(ENERGYPAD3), ENERGYPAD3);
 	}
 
 	public static void initClient() {

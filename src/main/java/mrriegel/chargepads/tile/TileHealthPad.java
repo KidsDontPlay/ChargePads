@@ -36,15 +36,15 @@ public class TileHealthPad extends TilePad {
 		return entity instanceof EntityPlayer;
 	}
 
-	private static final int RFPERHEAL = 2000;
+	private static final int RFPERHEAL = 2500;
 
 	private boolean healEntity(EntityLivingBase entity) {
 		if (entity.getMaxHealth() > entity.getHealth()) {
 			float need = Math.min(entity.getMaxHealth() - entity.getHealth(), healAmount());
 			if (need > 0F) {
 				this.energy.extractEnergy((int) (RFPERHEAL * need), false);
-				entity.setHealth(entity.getHealth() + need);
-				if (entity instanceof EntityPlayer && getTier() > 2 && new Random().nextInt(200) == 0) {
+				entity.heal(need);
+				if (entity instanceof EntityPlayer && new Random().nextInt((4 - getTier()) * 75) == 0) {
 					((EntityPlayer) entity).getFoodStats().setFoodLevel(((EntityPlayer) entity).getFoodStats().getFoodLevel() + 1);
 				}
 				return true;
