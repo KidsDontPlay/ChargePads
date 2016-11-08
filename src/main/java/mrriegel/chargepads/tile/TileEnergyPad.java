@@ -1,15 +1,18 @@
 package mrriegel.chargepads.tile;
 
 import mrriegel.chargepads.ConfigHandler;
+import mrriegel.limelib.helper.InvHelper;
 import net.darkhax.tesla.api.ITeslaConsumer;
 import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import cofh.api.energy.IEnergyContainerItem;
 
@@ -43,6 +46,16 @@ public class TileEnergyPad extends TilePad {
 				}
 			}
 		}
+		if (!charged) {
+			IItemHandler inv = InvHelper.getItemHandler(worldObj.getTileEntity(pos.offset(getFacing())), null);
+			if (inv != null)
+				for (int i = 0; i < inv.getSlots(); i++) {
+					if (inv.getStackInSlot(i) != null && chargeProvider(inv.getStackInSlot(i))) {
+						charged = true;
+						break;
+					}
+				}
+		}
 		return charged;
 	}
 
@@ -69,6 +82,14 @@ public class TileEnergyPad extends TilePad {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		if (onClient())
+			return;
+
 	}
 
 	private int chargeAmount() {
