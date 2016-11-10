@@ -10,6 +10,7 @@ import mrriegel.chargepads.proxy.CommonProxy;
 import mrriegel.chargepads.tile.TilePad;
 import mrriegel.limelib.block.CommonBlockContainer;
 import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.item.CommonItemBlock;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -105,12 +106,12 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 
 	@Override
 	protected ItemBlock getItemBlock() {
-		return (ItemBlock) new ItemBlock(this) {
+		return new CommonItemBlock(this) {
 			@Override
 			public EnumRarity getRarity(ItemStack stack) {
 				return EnumRarity.values()[getTier() - 1];
 			}
-		}.setRegistryName(getRegistryName());
+		};
 	}
 
 }

@@ -8,7 +8,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -82,14 +81,6 @@ public class TileEnergyPad extends TilePad {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void update() {
-		super.update();
-		if (onClient())
-			return;
-
 	}
 
 	private int chargeAmount() {
