@@ -27,8 +27,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T> {
 	public static final PropertyBool CHARGE = PropertyBool.create("charge");
@@ -58,7 +60,7 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		TileEntity te = world.getTileEntity(pos);
+		TileEntity te = world instanceof ChunkCache ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : world.getTileEntity(pos);
 		boolean charge = false;
 		if (te instanceof TilePad) {
 			charge = ((TilePad) te).isActive();
