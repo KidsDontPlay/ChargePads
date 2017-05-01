@@ -5,6 +5,7 @@ import mrriegel.chargepads.ConfigHandler;
 import mrriegel.chargepads.init.ModBlocks;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -30,8 +31,8 @@ public class CommonProxy {
 	public static final CreativeTabs tab = new CreativeTabs(ChargePads.MODID) {
 
 		@Override
-		public Item getTabIconItem() {
-			return Item.getItemFromBlock(ModBlocks.ENERGYPAD1);
+		public ItemStack getTabIconItem() {
+			return new ItemStack(Item.getItemFromBlock(ModBlocks.ENERGYPAD1));
 		}
 
 		@Override

@@ -30,7 +30,7 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 	protected boolean active = false, markedForSync = false;
 
 	public EnumFacing getFacing() {
-		return worldObj.getBlockState(pos).getValue(BlockDispenser.FACING);
+		return world.getBlockState(pos).getValue(BlockDispenser.FACING);
 	}
 
 	public boolean isActive() {
@@ -39,7 +39,7 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 
 	public int getTier() {
 		try {
-			return ((BlockPad<?>) worldObj.getBlockState(pos).getBlock()).getTier();
+			return ((BlockPad<?>) getBlockType()).getTier();
 		} catch (Exception e) {
 			return 1;
 		}
@@ -54,8 +54,8 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 	private List<Entity> entityList;
 
 	public List<Entity> getEntities(boolean force) {
-		if (entityList == null || worldObj.getTotalWorldTime() % 10 == 0 || force)
-			return entityList = worldObj.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.offset(getFacing())).expand(getFacing().getAxis() == Axis.X ? 1 : 0, getFacing().getAxis() == Axis.Y ? 1 : 0, getFacing().getAxis() == Axis.Z ? 1 : 0));
+		if (entityList == null || world.getTotalWorldTime() % 10 == 0 || force)
+			return entityList = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.offset(getFacing())).expand(getFacing().getAxis() == Axis.X ? 1 : 0, getFacing().getAxis() == Axis.Y ? 1 : 0, getFacing().getAxis() == Axis.Z ? 1 : 0));
 		else
 			return entityList;
 	}
@@ -65,19 +65,19 @@ public abstract class TilePad extends CommonTile implements ITickable, IDataKeep
 		if (onClient())
 			return;
 		boolean before = active;
-		if (!worldObj.isBlockPowered(pos)) {
+		if (!world.isBlockPowered(pos)) {
 			active = chargeEntities();
 			if (active) {
 				markedForSync = true;
 			}
 		} else
 			active = false;
-		if (markedForSync && worldObj.getTotalWorldTime() % 5 == 0) {
+		if (markedForSync && world.getTotalWorldTime() % 5 == 0) {
 			markedForSync = false;
 			sync();
 		}
 		if (active != before) {
-			worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockPad.CHARGE, active), 2);
+			world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockPad.CHARGE, active), 2);
 		}
 	}
 

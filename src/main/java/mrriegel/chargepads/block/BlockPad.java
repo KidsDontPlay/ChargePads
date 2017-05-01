@@ -10,8 +10,8 @@ import mrriegel.chargepads.proxy.CommonProxy;
 import mrriegel.chargepads.tile.TilePad;
 import mrriegel.limelib.block.CommonBlockContainer;
 import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.helper.WorldHelper;
 import mrriegel.limelib.item.CommonItemBlock;
-import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -24,13 +24,12 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T> {
 	public static final PropertyBool CHARGE = PropertyBool.create("charge");
@@ -44,8 +43,8 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		return this.getDefaultState().withProperty(FACING, BlockPistonBase.getFacingFromEntity(pos, placer)).withProperty(CHARGE, false);
+	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+		return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)).withProperty(CHARGE, false);
 	}
 
 	@Override
@@ -60,7 +59,7 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		TileEntity te = world instanceof ChunkCache ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : world.getTileEntity(pos);
+		TileEntity te = WorldHelper.getTile(world, pos);
 		boolean charge = false;
 		if (te instanceof TilePad) {
 			charge = ((TilePad) te).isActive();
@@ -76,7 +75,7 @@ public abstract class BlockPad<T extends TilePad> extends CommonBlockContainer<T
 				Vec3d o = new Vec3d(pos.getX() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1), pos.getY() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1), pos.getZ() + .5 + ((worldIn.rand.nextDouble() - .5) / 1.1));
 				BlockPos nei = pos.offset(stateIn.getValue(FACING));
 				Vec3d v = new Vec3d(nei.getX() - pos.getX(), nei.getY() - pos.getY(), nei.getZ() - pos.getZ());
-				v = v.scale(.07);
+				v = v.scale(.06);
 				ChargePads.proxy.spawnParticle(o.xCoord, o.yCoord, o.zCoord, v.xCoord, v.yCoord, v.zCoord, getRegistryName().toString());
 			}
 		}

@@ -1,19 +1,20 @@
 package mrriegel.chargepads.tile;
 
+import java.util.List;
+
 import mrriegel.chargepads.ConfigHandler;
+import mrriegel.limelib.helper.EnergyHelper;
+import mrriegel.limelib.helper.EnergyHelper.Energy;
 import mrriegel.limelib.helper.InvHelper;
-import net.darkhax.tesla.api.ITeslaConsumer;
-import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
-import cofh.api.energy.IEnergyContainerItem;
+
+import com.google.common.collect.Lists;
 
 public class TileEnergyPad extends TilePad {
 
@@ -29,7 +30,7 @@ public class TileEnergyPad extends TilePad {
 				charged = true;
 			} else if (e instanceof EntityItem) {
 				EntityItem ei = (EntityItem) e;
-				if (ei.getEntityItem() != null && ei.getEntityItem().getItem() != null) {
+				if (!ei.getEntityItem().isEmpty()) {
 					ItemStack stack = ei.getEntityItem();
 					charged = chargeProvider(stack);
 					ei.setEntityItemStack(stack);
@@ -37,19 +38,20 @@ public class TileEnergyPad extends TilePad {
 			} else if (e instanceof EntityPlayer) {
 				PlayerInvWrapper inv = new PlayerInvWrapper(((EntityPlayer) e).inventory);
 				for (int i = 0; i < inv.getSlots(); i++) {
-					if (inv.getStackInSlot(i) != null && (charged = chargeProvider(inv.getStackInSlot(i)))) {
+					if (!inv.getStackInSlot(i).isEmpty() && chargeProvider(inv.getStackInSlot(i))) {
 						//						if (worldObj.rand.nextBoolean()&&false)
 						//							((EntityPlayer) e).openContainer.detectAndSendChanges();
+						charged = true;
 						break;
 					}
 				}
 			}
 		}
 		if (!charged) {
-			IItemHandler inv = InvHelper.getItemHandler(worldObj.getTileEntity(pos.offset(getFacing())), null);
+			IItemHandler inv = InvHelper.getItemHandler(world.getTileEntity(pos.offset(getFacing())), null);
 			if (inv != null)
 				for (int i = 0; i < inv.getSlots(); i++) {
-					if (inv.getStackInSlot(i) != null && chargeProvider(inv.getStackInSlot(i))) {
+					if (!inv.getStackInSlot(i).isEmpty() && chargeProvider(inv.getStackInSlot(i))) {
 						charged = true;
 						break;
 					}
@@ -59,26 +61,19 @@ public class TileEnergyPad extends TilePad {
 	}
 
 	private boolean chargeProvider(ICapabilityProvider provider) {
-		if (ConfigHandler.RF && provider instanceof ItemStack && ((ItemStack) provider).getItem() instanceof IEnergyContainerItem) {
-			int receive = ((IEnergyContainerItem) ((ItemStack) provider).getItem()).receiveEnergy((ItemStack) provider, chargeAmount(), false);
-			if (receive > 0) {
-				this.energy.extractEnergy(receive, false);
-				return true;
-			}
-		} else if (ConfigHandler.FE && provider.hasCapability(CapabilityEnergy.ENERGY, null)) {
-			IEnergyStorage storage = provider.getCapability(CapabilityEnergy.ENERGY, null);
-			int receive = storage.receiveEnergy(chargeAmount(), false);
-			if (receive > 0) {
-				this.energy.extractEnergy(receive, false);
-				return true;
-			}
-		} else if (ConfigHandler.TESLA && provider.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, null)) {
-			ITeslaConsumer consumer = provider.getCapability(TeslaCapabilities.CAPABILITY_CONSUMER, null);
-			long receive = consumer.givePower(chargeAmount(), false);
-			if (receive > 0) {
-				this.energy.extractEnergy((int) receive, false);
-				return true;
-			}
+		List<Energy> lis = Lists.newArrayList();
+		if (ConfigHandler.RF)
+			lis.add(Energy.RF);
+		if (ConfigHandler.FE)
+			lis.add(Energy.FORGE);
+		if (ConfigHandler.TESLA)
+			lis.add(Energy.TESLA);
+		if (EnergyHelper.isEnergyContainer(provider, null, lis.toArray(new Energy[lis.size()])) == null)
+			return false;
+		int receive = (int) EnergyHelper.receiveEnergy(provider, null, chargeAmount(), false);
+		if (receive > 0) {
+			this.energy.extractEnergy(receive, false);
+			return true;
 		}
 		return false;
 	}

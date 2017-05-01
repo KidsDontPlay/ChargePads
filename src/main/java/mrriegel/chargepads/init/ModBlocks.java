@@ -33,9 +33,7 @@ public class ModBlocks {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ENERGYPAD1), "isi", "qMq", 'i', "ingotIron", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', Blocks.REDSTONE_BLOCK));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ENERGYPAD2), "isi", "qMq", 'i', "ingotGold", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', ENERGYPAD1));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ENERGYPAD3), "isi", "qMq", 'i', "gemDiamond", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', ENERGYPAD2));
-		ItemStack potion = new ItemStack(Items.POTIONITEM);
-		NBTStackHelper.setString(potion, "Potion", "minecraft:strong_regeneration");
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(HEALTHPAD1), "isi", "qMq", 'i', "ingotIron", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', potion));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(HEALTHPAD1), "isi", "qMq", 'i', "ingotIron", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', NBTStackHelper.setString(new ItemStack(Items.POTIONITEM), "Potion", "minecraft:strong_regeneration")));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(HEALTHPAD2), "isi", "qMq", 'i', "ingotGold", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', HEALTHPAD1));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(HEALTHPAD3), "isi", "qMq", 'i', "gemDiamond", 's', Blocks.STONE_PRESSURE_PLATE, 'q', "gemQuartz", 'M', HEALTHPAD2));
 
